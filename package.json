@@ -1,0 +1,28 @@
+{
+  "name": "artcart",
+  "version": "1.0.0",
+  "description": "MERN full stack e-commerce website.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piyush-mishra-pm/Art-Cart.git"
+  },
+  "keywords": [
+    "MERN",
+    "E-Commerce"
+  ],
+  "author": "Piyush Mishra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/piyush-mishra-pm/Art-Cart/issues"
+  },
+  "homepage": "https://github.com/piyush-mishra-pm/Art-Cart#readme",
+  "dependencies": {
+    "dotenv": "^14.3.2",
+    "express": "^4.17.2",
+    "mongoose": "^6.1.8"
+  }
+}

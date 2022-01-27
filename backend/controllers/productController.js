@@ -9,9 +9,12 @@ exports.newProduct = async (req, res, next) => {
     });
 }
 
-exports.getAllProducts = (req,res,next) =>{
+// Gets all the products via => api/v1/allproducts
+exports.getAllProducts = async (req,res,next) =>{
+    const allProducts = await Product.find();
     res.status(200).json({
-        success:true,
-        message:'This route should show all art-products available in the database.'
-    })
+        success: true,
+        count: allProducts.length,
+        allProducts,
+    });
 }

@@ -38,10 +38,10 @@ const productSchema = new mongoose.Schema({
         required: [true, 'Please select valid product category'],
         enum: {
             values: [
-                'Sculptures',
+                'Sculpture',
                 'Fabric',
-                'Paintings',
-                'Cards'
+                'Painting',
+                'Card'
             ],
             message: 'Please select valid product category from the specified categories.'
         }

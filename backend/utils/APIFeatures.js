@@ -34,6 +34,15 @@ class APIFeatures{
         this.query = this.query.find(JSON.parse(queryString));
         return this;
     }
+
+    paginate(resultsPerPage){
+        const currentPage = Number(this.queryString.page) || 1;
+        const skip = resultsPerPage * (currentPage - 1);
+
+        // Skip the previous page contents and return the resultPerPage number of results:
+        this.query = this.query.limit(resultsPerPage).skip(skip);
+        return this;
+    }
 }
 
 module.exports = APIFeatures;

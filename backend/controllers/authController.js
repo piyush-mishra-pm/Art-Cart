@@ -3,6 +3,7 @@ const ErrorHandler = require('../utils/errorHandler');
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
 const sendEmail = require('../utils/sendEmail');
+const crypto =require('crypto');
 
 // Register a User via => /api/v1/register
 exports.registerUser = catchAsyncErrors(async(req,res,next) => {
@@ -88,6 +89,43 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler(error.message, 500));
     }
     
+})
+
+// Reset Password => /api/v1/password/reset/:token
+exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
+    const token = req.params.token;
+
+    // Hash the url token: (because the DB contains hashed token and hence we need to match the hash of token)
+    const hashedResetPasswordToken = crypto.createHash('sha256')
+                                            .update(token)
+                                            .digest('hex');
+
+    // comparing with the hashed token stored in DB. 
+    // Ensure that tokens match and that token hasnot expired.
+    const user = await User.findOne({
+        resetPasswordToken: hashedResetPasswordToken,
+        resetPasswordExpire:{$gt: Date.now()}
+    });
+
+    // If token invalid or expired.
+    if(!user){
+        return next(new ErrorHandler('Password reset token is invalid or has been expired',400));
+    }
+
+    // Check whether the provided new password and confirm-new-password are equal.
+    if(req.body.password !== req.body.confirmPassword){
+        return next(new ErrorHandler('Password and Confirm passwords do not match.',400));
+    }
+
+    // Set the new Password:
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    // Saving the User with new password and resetted reset password attributes.
+    await user.save();
+
+    sendToken(user, 200, res);
 })
 
 // Logout user => /api/v1/logout

@@ -53,7 +53,7 @@ exports.getSingleOrder = catchAsyncErrors(async (req, res, next) => {
     });
 });
 
-// Get a orders of a logged in user => /api/v1/orders/me
+// Get all orders of a logged in user => /api/v1/orders/me
 exports.myOrders = catchAsyncErrors(async (req, res, next) => {
     const orders = await Order.find({user:req.user.id});
     
@@ -63,6 +63,27 @@ exports.myOrders = catchAsyncErrors(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
+        orders
+    });
+});
+
+// ADMIN-ROUTES:
+// Admin can get all orders => /api/v1/admin/orders
+exports.allOrders = catchAsyncErrors(async (req, res, next) => {
+    const orders = await Order.find();
+
+    let totalPriceOfAllOrders = 0;
+    orders.forEach(order=>{
+        totalPriceOfAllOrders+=order.totalPrice;
+    });
+    
+    if(!orders) {
+        return next(new ErrorHandler('No Order found with this ID', 404));
+    }
+
+    res.status(200).json({
+        success: true,
+        totalPriceOfAllOrders,
         orders
     });
 });

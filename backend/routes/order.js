@@ -10,5 +10,10 @@ router.route('/order/:id').get(authMiddleware.isAuthenticatedUser, orderControll
 router.route('/orders/me').get(authMiddleware.isAuthenticatedUser, orderController.myOrders);
 
 router.route('/admin/orders').get(authMiddleware.isAuthenticatedUser, authMiddleware.authorizeRoles('admin'), orderController.allOrders);
-router.route('/admin/order/:id').put(authMiddleware.isAuthenticatedUser, authMiddleware.authorizeRoles('admin'), orderController.updateOrder);
+router.route('/admin/order/:id')
+        .put(authMiddleware.isAuthenticatedUser, authMiddleware.authorizeRoles('admin'), orderController.updateOrder)
+        .delete(authMiddleware.isAuthenticatedUser, authMiddleware.authorizeRoles('admin'), orderController.deleteOrder);
+
+
+    
 module.exports = router;

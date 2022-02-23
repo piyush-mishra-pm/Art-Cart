@@ -85,3 +85,48 @@ exports.deleteSingleProduct = catchAsyncErrors(async (req, res, next) => {
         message: 'Product is deleted.',
     });
 });
+
+// Create a new review => /api/v1/review
+exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
+    const {rating, comment, productId} = req.body;
+
+    const review = {
+            user: req.user._id,
+            name: req.user.name,
+            rating: Number(rating),
+            comment,
+        };
+
+    const product = await Product.findById(productId);
+
+    // A user can only review the product once.
+    const isReviewed = product.reviews.find(
+        r=>r.user.toString() === req.user._id.toString()
+    );
+    
+    
+    // If user has already review product, then update the review.
+    if(isReviewed){
+        product.reviews.forEach( review => {
+                if(review.user.toString() === req.user._id.toString()){
+                    review.comment = comment;
+                    review.rating = rating;
+                }
+            }
+        );
+    }else{
+        product.reviews.push(review);
+        product.numOfReviews = product.reviews.length;
+    }
+
+    // Managing product ratings:
+    product.ratings = product.reviews.reduce(
+        (acc,item)=> (item.rating + acc, 0)/product.reviews.length
+    );
+
+    await product.save({validateBeforeSave: false});
+
+    res.status(200).json({
+        success: true,
+    });
+})
